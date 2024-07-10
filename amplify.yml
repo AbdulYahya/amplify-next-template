@@ -3,6 +3,8 @@ backend:
   phases:
     preBuild:
       commands:
+        - export NODE_OPTIONS=--max-old-space-size=32768
+        - bash bootstrap-build-env.sh
         - npm install -g pnpm
     build:
       commands:
