@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+import { profileEnd } from "console";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -6,13 +7,72 @@ adding a new "isDone" field as a boolean. The authorization rule below
 specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
-const schema = a.schema({
-  Todo: a.model({
-      content: a.string(),
-      isDone: a.boolean(),
+// const schema = a.schema({
+//   Todo: a.model({
+//       content: a.string(),
+//       isDone: a.boolean(),
+//     })
+//     .authorization((allow) => [allow.owner()]),
+// });
+const schema = a
+  .schema({
+  // Review: a
+  //   .model({
+  //     products: a.hasMany("")
+  //     reviewId: a.id().required(),
+  //     customer: a.string()
+  //   }),
+    Todo: a
+      .model({
+        content: a.string(),
+        isDone: a.boolean()
+      }),
+    Tag: a
+      .model({
+        value: a.string(),
+        productId: a.id(),
+        tags: a.belongsTo('Product', 'productId')
+      }),
+    Review: a
+      .model({
+        productId: a.id(),
+        reviews: a.belongsTo('Product', 'productId'),
+        customer: a.string(),
+        review: a.string(),
+        score: a.integer()
+      }),
+    Sale: a
+      .model({
+        productId: a.id(),
+        sales: a.belongsTo('Product', 'productId'),
+        weekEnding: a.date(),
+        retailSales: a.integer(),
+        wholesaleSales: a.integer(), 
+        unitsSold: a.integer(), 
+        retailerMargin: a.integer()
+      }),
+    Product: a.model({
+      // id: a.id().required(),
+      title: a.string(),
+      image: a.url(),
+      subtitle: a.string(),
+      brand: a.string(),
+      reviews: a.hasMany('Review', 'productId'),
+      // reviews: a.customType({
+      //   reviewId: a.id(),
+      //   hasMany("Review", "reviewId")
+      //   customer: a.string(),
+      //   review: a.string(),
+      //   score: a.integer()
+      // }),
+      retailer: a.string(),
+      details: a.string(),
+      tags: a.hasMany('Tag', 'productId'),
+      sales: a.hasMany('Sale', 'productId')
     })
-    .authorization((allow) => [allow.owner()]),
-});
+    // .identifier(["id"]),
+  })
+  .authorization((allow) => [allow.owner()]);
 
 export type Schema = ClientSchema<typeof schema>;
 
